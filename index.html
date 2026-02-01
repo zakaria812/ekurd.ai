@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nexus AI Studio | Advanced Chat & Image Synthesis</title>
-    <meta name="description" content="Professional AI assistant with enhanced reasoning and photorealistic image generation">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -23,41 +22,8 @@
                         mono: ['JetBrains Mono', 'monospace'],
                     },
                     colors: {
-                        dark: {
-                            950: '#030303',
-                            900: '#0a0a0a',
-                            850: '#111111',
-                            800: '#1a1a1a',
-                            700: '#262626',
-                        },
-                        accent: {
-                            gold: '#fbbf24',
-                            amber: '#f59e0b',
-                            blue: '#3b82f6',
-                            purple: '#8b5cf6',
-                            rose: '#f43f5e',
-                        }
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'gradient': 'gradient 15s ease infinite',
-                        'shimmer': 'shimmer 2s linear infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        },
-                        gradient: {
-                            '0%': { backgroundPosition: '0% 50%' },
-                            '50%': { backgroundPosition: '100% 50%' },
-                            '100%': { backgroundPosition: '0% 50%' },
-                        },
-                        shimmer: {
-                            '0%': { backgroundPosition: '-1000px 0' },
-                            '100%': { backgroundPosition: '1000px 0' },
-                        }
+                        dark: { 950: '#030303', 900: '#0a0a0a', 850: '#111111', 800: '#1a1a1a', 700: '#262626' },
+                        accent: { gold: '#fbbf24', amber: '#f59e0b', blue: '#3b82f6', purple: '#8b5cf6', rose: '#f43f5e' }
                     }
                 }
             }
@@ -66,521 +32,352 @@
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #030303;
-            color: #e5e5e5;
-            overflow: hidden;
-            height: 100vh;
-        }
+        body { font-family: 'Inter', sans-serif; background: #030303; color: #e5e5e5; overflow: hidden; height: 100vh; }
 
-        /* Aurora Background */
         .aurora {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
-            filter: blur(60px);
-            animation: aurora 20s ease infinite;
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            filter: blur(60px); animation: aurora 20s ease infinite;
         }
-        @keyframes aurora {
-            0%, 100% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(5deg) scale(1.1); }
-        }
+        @keyframes aurora { 0%, 100% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(5deg) scale(1.1); } }
 
-        /* Glass Effects */
-        .glass {
-            background: rgba(26, 26, 26, 0.7);
-            backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        
-        .glass-strong {
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        .glass { background: rgba(26, 26, 26, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass-strong { background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 3px; }
 
-        /* Input Styling */
-        .premium-input {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        /* Tab Panel Styles */
+        .tab-panel {
+            position: fixed; left: 0; top: 0; height: 100%; z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .tab-panel.open { transform: translateX(0); }
+
+        .tab-handle {
+            position: absolute; right: -48px; top: 50%; transform: translateY(-50%);
+            width: 48px; height: 140px; cursor: pointer;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-left: none;
+            border-radius: 0 12px 12px 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 12px; box-shadow: 4px 0 20px rgba(0,0,0,0.5);
             transition: all 0.3s ease;
         }
-        .premium-input:focus-within {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(245, 158, 11, 0.4);
-            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1), 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        .tab-handle:hover { 
+            background: linear-gradient(180deg, #252525 0%, #1a1a1a 100%);
+            width: 52px; right: -52px;
         }
 
-        /* Messages */
-        .message-enter {
-            animation: messageEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .tab-icon { 
+            width: 32px; height: 32px; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; transition: all 0.3s;
         }
-        @keyframes messageEnter {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .tab-icon.active { background: rgba(245, 158, 11, 0.2); color: #fbbf24; box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
+        .tab-icon:not(.active) { color: rgba(255,255,255,0.3); }
+
+        /* Tab Switcher Inside Panel */
+        .mode-switcher {
+            display: flex; flex-direction: column; gap: 12px; padding: 20px;
+        }
+        
+        .mode-btn {
+            display: flex; align-items: center; gap: 12px; padding: 16px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px; cursor: pointer; transition: all 0.3s;
+            color: rgba(255,255,255,0.6); text-align: left;
+        }
+        .mode-btn:hover { background: rgba(255,255,255,0.08); transform: translateX(4px); }
+        .mode-btn.active { 
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.05));
+            border-color: rgba(245, 158, 11, 0.4); color: #fbbf24;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
         }
 
-        /* Code Blocks */
-        .code-block {
-            background: #0d0d0d;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            overflow: hidden;
-            margin: 1rem 0;
-        }
-        .code-header {
-            background: rgba(255, 255, 255, 0.03);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .mode-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); }
+        .mode-btn.active .mode-icon { background: rgba(245, 158, 11, 0.2); }
 
-        /* Image Cards */
-        .artifact-card {
-            background: linear-gradient(145deg, #111, #0a0a0a);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        /* Close Button */
+        .close-tab-btn {
+            position: absolute; top: 20px; right: 20px;
+            width: 36px; height: 36px; border-radius: 10px;
+            background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.3);
+            color: #f43f5e; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
         }
-        .artifact-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(245, 158, 11, 0.3);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-        }
+        .close-tab-btn:hover { background: rgba(244, 63, 94, 0.2); transform: rotate(90deg) scale(1.1); }
 
-        /* Loading Animation */
-        .typing-indicator {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background: linear-gradient(135deg, #f59e0b, #ef4444);
-            border-radius: 50%;
-            animation: typing 1.4s infinite ease-in-out both;
-        }
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes typing {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
+        /* Content Area Adjustment */
+        .main-content { margin-left: 0; transition: margin-left 0.4s ease; }
+        
+        .message-enter { animation: messageEnter 0.4s ease forwards; }
+        @keyframes messageEnter { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Enhanced Prompt Block */
-        .enhanced-prompt {
-            background: rgba(245, 158, 11, 0.1);
-            border-left: 3px solid #f59e0b;
-            font-family: 'JetBrains Mono', monospace;
-        }
+        .typing-indicator { display: flex; gap: 4px; }
+        .typing-dot { width: 8px; height: 8px; background: linear-gradient(135deg, #f59e0b, #ef4444); border-radius: 50%; animation: typing 1.4s infinite; }
+        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        .text-gradient {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #ef4444 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-size: 200% auto;
-            animation: gradient 5s ease infinite;
-        }
+        .premium-input { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s; }
+        .premium-input:focus-within { border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1); }
 
-        /* Thinking Box */
-        .thinking-box {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 8px;
-            padding: 12px;
-            margin: 8px 0;
-            font-size: 0.9rem;
-            color: #93c5fd;
-        }
+        .text-gradient { background: linear-gradient(135deg, #fbbf24, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* Button Hover Effects */
-        .btn-hover {
-            transition: all 0.2s ease;
-        }
-        .btn-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.2);
-        }
-        .btn-hover:active {
-            transform: translateY(0);
-        }
-
-        /* Tab Content Transition */
-        .tab-content {
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        .tab-content.hidden {
-            display: none;
-        }
-        .tab-content.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Close Button Animation */
-        .close-btn {
-            transition: all 0.2s ease;
-        }
-        .close-btn:hover {
-            transform: rotate(90deg);
-            color: #f43f5e;
-        }
-
-        /* Style Selector */
-        .style-chip {
-            transition: all 0.2s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .style-chip:hover {
-            border-color: rgba(245, 158, 11, 0.5);
-            background: rgba(245, 158, 11, 0.1);
-        }
-        .style-chip.active {
-            background: rgba(245, 158, 11, 0.2);
-            border-color: rgba(245, 158, 11, 0.5);
-            color: #fbbf24;
-        }
-
-        /* Advanced Settings Panel */
-        .settings-panel {
-            background: rgba(10, 10, 10, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-        }
+        .artifact-card { background: linear-gradient(145deg, #111, #0a0a0a); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; overflow: hidden; transition: all 0.4s; }
+        .artifact-card:hover { transform: translateY(-4px); border-color: rgba(245, 158, 11, 0.3); }
     </style>
 </head>
 <body class="h-screen w-full overflow-hidden">
 
     <div class="aurora"></div>
 
-    <div class="flex h-full w-full">
+    <!-- Openable Tab Panel -->
+    <div id="tabPanel" class="tab-panel w-80 glass-strong border-r border-white/10 flex flex-col">
         
-        <!-- Sidebar -->
-        <aside id="sidebar" class="w-80 h-full glass-strong flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 absolute md:relative z-50 border-r border-white/10">
-            <div class="p-6 border-b border-white/10">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-blue-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                        <i class="fas fa-sparkles text-white text-lg"></i>
-                    </div>
-                    <div>
-                        <h1 class="font-bold text-xl tracking-tight text-white">Nexus AI</h1>
-                        <p class="text-xs text-amber-500/80 uppercase tracking-widest font-semibold">Studio Edition</p>
-                    </div>
-                </div>
+        <!-- Close X Button -->
+        <button onclick="app.toggleTabPanel()" class="close-tab-btn" title="Close Tab">
+            <i class="fas fa-times text-lg"></i>
+        </button>
 
-                <!-- Mode Switcher with Close Option -->
-                <div class="bg-white/5 rounded-2xl p-1 border border-white/10">
-                    <div class="flex gap-1">
-                        <button onclick="app.switchTab('chat')" id="tabChat" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                            <i class="fas fa-comments"></i>
-                            <span>Chat</span>
-                        </button>
-                        <button onclick="app.switchTab('image')" id="tabImage" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 text-neutral-400 hover:text-white hover:bg-white/5">
-                            <i class="fas fa-image"></i>
-                            <span>Images</span>
-                        </button>
-                    </div>
-                </div>
+        <!-- Tab Handle (Visible when closed) -->
+        <div class="tab-handle" onclick="app.toggleTabPanel()">
+            <div class="tab-icon ${this.currentTab === 'chat' ? 'active' : ''}" id="handleChatIcon">
+                <i class="fas fa-comments"></i>
+            </div>
+            <div style="width: 2px; height: 20px; background: rgba(255,255,255,0.1); border-radius: 1px;"></div>
+            <div class="tab-icon ${this.currentTab === 'image' ? 'active' : ''}" id="handleImageIcon">
+                <i class="fas fa-image"></i>
+            </div>
+            <span style="position: absolute; right: -4px; top: 50%; transform: translateY(-50%); width: 4px; height: 40px; background: #f59e0b; border-radius: 0 2px 2px 0; opacity: 0.8;"></span>
+        </div>
+
+        <!-- Panel Content -->
+        <div class="p-6 pt-16 flex-1 flex flex-col">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-white mb-1">Select Mode</h2>
+                <p class="text-xs text-neutral-500 uppercase tracking-widest">Choose your workspace</p>
             </div>
 
-            <div class="flex-1 overflow-y-auto p-4 space-y-2" id="sidebarContent">
-                <!-- Dynamic -->
-            </div>
-
-            <div class="p-4 border-t border-white/10 space-y-3">
-                <!-- Advanced Settings Toggle -->
-                <button onclick="app.toggleAdvancedSettings()" class="w-full p-3 rounded-xl flex items-center gap-3 text-neutral-400 hover:text-white hover:bg-white/5 transition-all text-sm">
-                    <i class="fas fa-sliders-h w-5"></i>
-                    <span>Advanced Settings</span>
-                    <i class="fas fa-chevron-right ml-auto text-xs transition-transform" id="settingsArrow"></i>
+            <!-- Mode Switcher -->
+            <div class="mode-switcher flex-1">
+                <button onclick="app.switchMode('chat')" id="modeChat" class="mode-btn active group">
+                    <div class="mode-icon">
+                        <i class="fas fa-comments text-xl group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-semibold text-lg">AI Chat</div>
+                        <div class="text-xs opacity-60">Text generation & reasoning</div>
+                    </div>
+                    <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity text-amber-500"></i>
                 </button>
-                
-                <!-- Settings Panel -->
-                <div id="advancedSettings" class="hidden space-y-3 p-3 rounded-xl bg-white/5 border border-white/5">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-neutral-400">Deep Reasoning</span>
-                        <button onclick="app.toggleThinkMode()" id="thinkToggle" class="w-10 h-5 rounded-full bg-amber-500 relative transition-all">
-                            <span class="absolute left-1 top-1 w-3 h-3 rounded-full bg-white transition-transform translate-x-5"></span>
-                        </button>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-neutral-400">Auto-Enhance</span>
-                        <button onclick="app.toggleAutoEnhance()" id="autoEnhanceToggle" class="w-10 h-5 rounded-full bg-amber-500 relative transition-all">
-                            <span class="absolute left-1 top-1 w-3 h-3 rounded-full bg-white transition-transform translate-x-5"></span>
-                        </button>
-                    </div>
-                </div>
 
+                <button onclick="app.switchMode('image')" id="modeImage" class="mode-btn group">
+                    <div class="mode-icon">
+                        <i class="fas fa-image text-xl group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-semibold text-lg">Image Gen</div>
+                        <div class="text-xs opacity-60">Visual synthesis & art</div>
+                    </div>
+                    <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity text-amber-500"></i>
+                </button>
+            </div>
+
+            <!-- Recent History (Contextual) -->
+            <div class="border-t border-white/10 pt-4 mt-auto">
+                <h3 class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3 px-2">Recent</h3>
+                <div id="recentList" class="space-y-2 max-h-48 overflow-y-auto">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+
+            <!-- Footer Controls -->
+            <div class="pt-4 mt-4 border-t border-white/10 space-y-3">
+                <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-white/5">
+                    <span class="text-xs text-neutral-400">Deep Reasoning</span>
+                    <button onclick="app.toggleThinkMode()" id="thinkToggle" class="w-10 h-5 rounded-full bg-amber-500 relative transition-all">
+                        <span class="absolute left-1 top-1 w-3 h-3 rounded-full bg-white transition-transform translate-x-5"></span>
+                    </button>
+                </div>
                 <button onclick="app.clearAll()" class="w-full p-3 rounded-xl flex items-center gap-3 text-red-400 hover:bg-red-500/10 transition-all text-sm">
                     <i class="fas fa-trash-alt w-5"></i>
                     <span>Clear Memory</span>
                 </button>
             </div>
-        </aside>
+        </div>
+    </div>
 
-        <!-- Main Content -->
-        <main class="flex-1 flex flex-col h-full relative bg-black/20">
+    <!-- Main Content Area -->
+    <main id="mainContent" class="main-content flex-1 flex flex-col h-full relative bg-black/20">
+        
+        <!-- Header -->
+        <header class="h-16 glass border-b border-white/5 flex items-center justify-between px-6 z-40">
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                        <i class="fas fa-sparkles text-white text-sm"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg text-white">Nexus AI</h1>
+                        <p class="text-[10px] text-amber-500/80 uppercase tracking-widest font-semibold">Studio</p>
+                    </div>
+                </div>
+                <div class="h-6 w-px bg-white/10 mx-2"></div>
+                <div id="modeBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span class="text-neutral-300" id="modeText">Chat Mode</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="app.newSession()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-300 transition-all text-sm flex items-center gap-2">
+                    <i class="fas fa-plus"></i> <span class="hidden sm:inline">New</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Viewport -->
+        <div id="viewport" class="flex-1 overflow-y-auto relative scroll-smooth p-6">
             
-            <!-- Header -->
-            <header class="h-16 glass border-b border-white/5 flex items-center justify-between px-6 z-40">
-                <div class="flex items-center gap-4">
-                    <button onclick="app.toggleSidebar()" class="md:hidden p-2 text-neutral-400 hover:text-white">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
-                    
-                    <!-- Tab Indicator with Close Button -->
-                    <div class="flex items-center gap-3">
-                        <div id="modeBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                            <span class="text-neutral-300" id="modeText">Chat Mode</span>
+            <!-- CHAT MODE -->
+            <div id="chatInterface" class="h-full flex flex-col max-w-4xl mx-auto">
+                <div id="chatWelcome" class="flex-1 flex flex-col items-center justify-center p-6">
+                    <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mb-8 shadow-2xl shadow-amber-500/20 animate-pulse">
+                        <i class="fas fa-robot text-5xl text-white"></i>
+                    </div>
+                    <h2 class="text-5xl font-bold text-gradient mb-4">Advanced Chat</h2>
+                    <p class="text-neutral-400 text-center max-w-lg mb-12 text-lg">Step-by-step reasoning with chain-of-thought processing.</p>
+
+                    <div class="w-full max-w-2xl premium-input rounded-2xl p-1">
+                        <textarea id="chatInput" rows="3" placeholder="Present your complex query..." 
+                            class="w-full bg-transparent border-0 px-6 py-4 text-white placeholder-neutral-600 resize-none focus:outline-none text-lg"
+                            onkeydown="app.handleKeyDown(event)"></textarea>
+                        <div class="flex justify-between items-center px-4 pb-3">
+                            <div class="flex gap-2">
+                                <button onclick="app.loadExample('debug')" class="px-3 py-1.5 rounded-full text-xs bg-white/5 hover:bg-white/10 text-neutral-400 transition-all">Debug Code</button>
+                                <button onclick="app.loadExample('math')" class="px-3 py-1.5 rounded-full text-xs bg-white/5 hover:bg-white/10 text-neutral-400 transition-all">Math Proof</button>
+                            </div>
+                            <button onclick="app.sendMessage()" id="sendBtn" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 text-white font-semibold hover:shadow-lg hover:shadow-amber-500/20 transition-all flex items-center gap-2">
+                                Process <i class="fas fa-arrow-right"></i>
+                            </button>
                         </div>
-                        
-                        <!-- Close Tab Button -->
-                        <button onclick="app.closeCurrentTab()" id="closeTabBtn" class="hidden p-1.5 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-red-400 transition-all" title="Close current session">
-                            <i class="fas fa-times"></i>
+                    </div>
+                </div>
+
+                <div id="chatMessages" class="hidden flex-1 space-y-6 pb-32 max-w-4xl mx-auto w-full">
+                    <!-- Dynamic -->
+                </div>
+
+                <div id="chatInputArea" class="hidden fixed bottom-6 left-6 right-6 z-30 max-w-4xl mx-auto">
+                    <div class="glass border border-white/10 rounded-2xl p-2 flex items-end gap-2 shadow-2xl">
+                        <textarea id="chatInputActive" rows="1" placeholder="Continue reasoning..." 
+                            class="flex-1 bg-transparent border-0 px-4 py-3 text-white placeholder-neutral-600 resize-none focus:outline-none max-h-32"
+                            onkeydown="app.handleKeyDown(event)"></textarea>
+                        <button onclick="app.stopGeneration()" id="stopBtn" class="hidden p-3 rounded-xl bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse">
+                            <i class="fas fa-stop"></i>
+                        </button>
+                        <button onclick="app.sendMessage()" id="sendBtnActive" class="p-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 text-white hover:shadow-lg transition-all">
+                            <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
                 </div>
+            </div>
 
-                <div class="flex items-center gap-3">
-                    <button onclick="app.toggleImageSettings()" id="imageSettingsBtn" class="hidden p-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-300 transition-all">
-                        <i class="fas fa-cog"></i>
-                    </button>
-                    <button onclick="app.newSession()" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-300 transition-all" title="New Session">
-                        <i class="fas fa-plus"></i>
-                    </button>
+            <!-- IMAGE MODE -->
+            <div id="imageInterface" class="hidden h-full flex flex-col max-w-6xl mx-auto">
+                <div class="text-center py-12">
+                    <h2 class="text-5xl font-bold text-gradient mb-4">Visual Synthesis</h2>
+                    <p class="text-neutral-400 text-lg">AI-powered prompt engineering for photorealistic generation</p>
                 </div>
-            </header>
 
-            <!-- Viewport -->
-            <div id="viewport" class="flex-1 overflow-y-auto relative scroll-smooth">
-                
-                <!-- CHAT MODE -->
-                <div id="chatInterface" class="tab-content h-full flex flex-col max-w-4xl mx-auto active">
+                <div class="glass rounded-2xl p-8 border border-white/10 mb-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="text-sm text-neutral-400 font-medium">Image Description</label>
+                        <button onclick="app.clearImageInput()" class="text-xs text-neutral-500 hover:text-red-400 transition-all">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
                     
-                    <!-- Welcome -->
-                    <div id="chatWelcome" class="flex-1 flex flex-col items-center justify-center p-6 pt-10">
-                        <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mb-6 shadow-2xl shadow-amber-500/30 animate-float">
-                            <i class="fas fa-robot text-4xl text-white"></i>
-                        </div>
-                        <h2 class="text-4xl font-bold text-gradient mb-2">Advanced Reasoning</h2>
-                        <p class="text-neutral-400 text-center max-w-lg mb-8">Step-by-step analysis, complex problem solving, and detailed explanations with chain-of-thought processing.</p>
-
-                        <div class="w-full max-w-2xl space-y-4">
-                            <div class="premium-input rounded-2xl p-1 transition-all focus-within:scale-[1.02]">
-                                <textarea id="chatInput" rows="3" placeholder="Present your complex query, code review, or mathematical proof..." 
-                                    class="w-full bg-transparent border-0 px-6 py-4 text-white placeholder-neutral-600 resize-none focus:outline-none text-lg"
-                                    onkeydown="app.handleKeyDown(event, 'welcome')"></textarea>
-                                <div class="flex justify-between items-center px-4 pb-3">
-                                    <div class="flex gap-2">
-                                        <button onclick="app.loadExample('debug')" class="px-3 py-1.5 rounded-full text-xs bg-white/5 hover:bg-white/10 text-neutral-400 transition-all btn-hover">Debug Code</button>
-                                        <button onclick="app.loadExample('math')" class="px-3 py-1.5 rounded-full text-xs bg-white/5 hover:bg-white/10 text-neutral-400 transition-all btn-hover">Math Proof</button>
-                                        <button onclick="app.loadExample('analyze')" class="px-3 py-1.5 rounded-full text-xs bg-white/5 hover:bg-white/10 text-neutral-400 transition-all btn-hover">Analyze</button>
-                                    </div>
-                                    <button onclick="app.sendMessage()" id="sendBtn" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 text-white font-semibold hover:shadow-lg hover:shadow-amber-500/20 transition-all flex items-center gap-2 btn-hover">
-                                        Process <i class="fas fa-arrow-right"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                    <textarea id="imagePrompt" rows="3" placeholder="Describe your vision in detail..." 
+                        class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-neutral-600 focus:border-amber-500/50 focus:outline-none resize-none mb-4 text-lg"></textarea>
+                    
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <button onclick="app.addModifier('8k resolution, highly detailed')" class="px-4 py-2 rounded-full text-sm bg-white/5 hover:bg-amber-500/20 border border-white/10 text-neutral-300 transition-all">+ 8K</button>
+                        <button onclick="app.addModifier('cinematic lighting, golden hour')" class="px-4 py-2 rounded-full text-sm bg-white/5 hover:bg-amber-500/20 border border-white/10 text-neutral-300 transition-all">+ Cinematic</button>
+                        <button onclick="app.addModifier('unreal engine 5, octane render')" class="px-4 py-2 rounded-full text-sm bg-white/5 hover:bg-amber-500/20 border border-white/10 text-neutral-300 transition-all">+ UE5</button>
+                        <button onclick="app.addModifier('photographed on Canon R5, 85mm f/1.2')" class="px-4 py-2 rounded-full text-sm bg-white/5 hover:bg-amber-500/20 border border-white/10 text-neutral-300 transition-all">+ Photo</button>
                     </div>
 
-                    <!-- Chat Messages -->
-                    <div id="chatMessages" class="hidden flex-1 p-4 md:p-6 space-y-6 pb-32">
+                    <div class="flex gap-4 mb-6">
+                        <select id="aspectRatio" class="bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-sm text-neutral-300 focus:border-amber-500/50 focus:outline-none">
+                            <option value="1024x1024">1:1 Square</option>
+                            <option value="1536x864">16:9 Cinematic</option>
+                            <option value="864x1536">9:16 Portrait</option>
+                        </select>
+                        
+                        <select id="qualitySetting" class="bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-sm text-neutral-300 focus:border-amber-500/50 focus:outline-none">
+                            <option value="ultra">Ultra Quality</option>
+                            <option value="high">High Quality</option>
+                            <option value="fast">Fast</option>
+                        </select>
+                        
+                        <button onclick="app.enhancePrompt()" id="enhanceBtn" class="flex-1 py-3 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 transition-all flex items-center justify-center gap-2">
+                            <i class="fas fa-wand-magic-sparkles"></i> AI Enhance Prompt
+                        </button>
+                    </div>
+
+                    <button onclick="app.generateImage()" id="genBtn" class="w-full py-4 rounded-xl bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 text-white font-bold text-lg shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 transition-all flex items-center justify-center gap-3">
+                        <i class="fas fa-atom text-2xl animate-spin" style="animation-duration: 3s;"></i>
+                        Generate Image
+                    </button>
+                </div>
+
+                <div id="gallerySection" class="hidden flex-1">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                            <i class="fas fa-images text-amber-500"></i>
+                            Gallery
+                        </h3>
+                        <div class="flex gap-3">
+                            <button onclick="app.downloadAll()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm text-neutral-300 transition-all">
+                                <i class="fas fa-download mr-2"></i>Download All
+                            </button>
+                            <button onclick="app.clearGallery()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-red-500/10 text-sm text-red-400 transition-all">
+                                <i class="fas fa-trash mr-2"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+                    <div id="galleryGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <!-- Dynamic -->
                     </div>
-
-                    <!-- Active Input -->
-                    <div id="chatInputArea" class="hidden fixed bottom-6 left-4 right-4 md:left-80 md:right-8 z-30">
-                        <div class="glass border border-white/10 rounded-2xl p-2 flex items-end gap-2 shadow-2xl">
-                            <textarea id="chatInputActive" rows="1" placeholder="Continue reasoning..." 
-                                class="flex-1 bg-transparent border-0 px-4 py-3 text-white placeholder-neutral-600 resize-none focus:outline-none max-h-32"
-                                onkeydown="app.handleKeyDown(event, 'active')"></textarea>
-                            <button onclick="app.stopGeneration()" id="stopBtn" class="hidden p-3 rounded-xl bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse">
-                                <i class="fas fa-stop"></i>
-                            </button>
-                            <button onclick="app.sendMessage()" id="sendBtnActive" class="p-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 text-white hover:shadow-lg transition-all btn-hover">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
-                        <p class="text-center text-xs text-neutral-600 mt-2">Deep reasoning mode active • Press Shift+Enter for new line</p>
-                    </div>
                 </div>
-
-                <!-- IMAGE MODE -->
-                <div id="imageInterface" class="tab-content hidden h-full flex flex-col max-w-6xl mx-auto p-6">
-                    
-                    <!-- Header with Back Button -->
-                    <div class="flex items-center gap-4 mb-6">
-                        <button onclick="app.switchTab('chat')" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-all">
-                            <i class="fas fa-arrow-left"></i>
-                        </button>
-                        <div>
-                            <h2 class="text-3xl font-bold text-gradient">Visual Synthesis Studio</h2>
-                            <p class="text-neutral-400 text-sm">AI-powered prompt engineering for photorealistic generation</p>
-                        </div>
-                    </div>
-
-                    <!-- Main Controls -->
-                    <div class="glass rounded-2xl p-6 border border-white/10 mb-6">
-                        
-                        <!-- Prompt Input -->
-                        <div class="mb-4">
-                            <div class="flex justify-between items-center mb-2">
-                                <label class="text-sm text-neutral-400">Image Description</label>
-                                <button onclick="app.clearImageInput()" class="text-xs text-neutral-500 hover:text-red-400 transition-all">
-                                    <i class="fas fa-times"></i> Clear
-                                </button>
-                            </div>
-                            <textarea id="imagePrompt" rows="3" placeholder="Describe your vision in detail. The AI will enhance this for optimal photorealistic results (e.g., 'A cyberpunk city at sunset with flying cars, neon lights reflecting on wet streets')..." 
-                                class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-neutral-600 focus:border-amber-500/50 focus:outline-none resize-none mb-3"></textarea>
-                            
-                            <!-- Quick Modifiers -->
-                            <div class="flex flex-wrap gap-2 mb-4">
-                                <button onclick="app.addModifier('8k resolution, highly detailed, sharp focus')" class="modifier-btn px-3 py-1.5 rounded-full text-xs bg-white/5 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/30 text-neutral-300 transition-all">+ 8K Detail</button>
-                                <button onclick="app.addModifier('cinematic lighting, golden hour, volumetric fog')" class="modifier-btn px-3 py-1.5 rounded-full text-xs bg-white/5 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/30 text-neutral-300 transition-all">+ Cinematic</button>
-                                <button onclick="app.addModifier('unreal engine 5, octane render, ray tracing, global illumination')" class="modifier-btn px-3 py-1.5 rounded-full text-xs bg-white/5 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/30 text-neutral-300 transition-all">+ UE5 Render</button>
-                                <button onclick="app.addModifier('photographed on Canon EOS R5, 85mm f/1.2 lens, shallow depth of field')" class="modifier-btn px-3 py-1.5 rounded-full text-xs bg-white/5 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/30 text-neutral-300 transition-all">+ Photography</button>
-                                <button onclick="app.addModifier('hyperrealistic, photorealistic, masterpiece, best quality')" class="modifier-btn px-3 py-1.5 rounded-full text-xs bg-white/5 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/30 text-neutral-300 transition-all">+ Hyperrealistic</button>
-                                <button onclick="app.addModifier('intricate details, subsurface scattering, hdr')" class="modifier-btn px-3 py-1.5 rounded-full text-xs bg-white/5 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/30 text-neutral-300 transition-all">+ Advanced</button>
-                            </div>
-
-                            <!-- Controls Row -->
-                            <div class="flex flex-wrap gap-3 mb-4">
-                                <select id="aspectRatio" class="bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-sm text-neutral-300 focus:border-amber-500/50 focus:outline-none">
-                                    <option value="1024x1024">1:1 Square (1024×1024)</option>
-                                    <option value="1536x864">16:9 Cinematic (1536×864)</option>
-                                    <option value="864x1536">9:16 Portrait (864×1536)</option>
-                                    <option value="1024x768">4:3 Classic (1024×768)</option>
-                                    <option value="1920x823">21:9 Ultra-Wide (1920×823)</option>
-                                </select>
-                                
-                                <select id="stylePreset" class="bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-sm text-neutral-300 focus:border-amber-500/50 focus:outline-none">
-                                    <option value="">No Style Preset</option>
-                                    <option value="photorealistic">Photorealistic</option>
-                                    <option value="digital_art">Digital Art</option>
-                                    <option value="anime">Anime/Manga</option>
-                                    <option value="oil_painting">Oil Painting</option>
-                                    <option value="3d_render">3D Render</option>
-                                    <option value="cinematic">Cinematic</option>
-                                    <option value="fantasy">Fantasy Art</option>
-                                </select>
-                                
-                                <select id="qualitySetting" class="bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-sm text-neutral-300 focus:border-amber-500/50 focus:outline-none">
-                                    <option value="ultra">Ultra Quality (Slow)</option>
-                                    <option value="high">High Quality (Balanced)</option>
-                                    <option value="fast">Fast (Draft)</option>
-                                </select>
-                            </div>
-
-                            <!-- AI Enhancement -->
-                            <div class="flex gap-3 mb-4">
-                                <button onclick="app.enhancePrompt()" id="enhanceBtn" class="flex-1 py-2.5 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 transition-all flex items-center justify-center gap-2 text-sm font-medium btn-hover">
-                                    <i class="fas fa-wand-magic-sparkles"></i>
-                                    AI Enhance Prompt (Recommended)
-                                </button>
-                                <button onclick="app.randomizePrompt()" class="px-4 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 transition-all" title="Randomize">
-                                    <i class="fas fa-dice"></i>
-                                </button>
-                            </div>
-
-                            <!-- Enhanced Preview -->
-                            <div id="enhancedPreview" class="hidden enhanced-prompt rounded-lg p-4 mb-4">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-amber-500 text-xs font-bold uppercase tracking-wider">Engineered Prompt</span>
-                                    <div class="flex gap-2">
-                                        <button onclick="app.editEnhanced()" class="text-xs text-blue-400 hover:text-blue-300">Edit</button>
-                                        <button onclick="app.useEnhanced()" class="text-xs text-amber-400 hover:text-amber-300">Use This</button>
-                                    </div>
-                                </div>
-                                <p id="enhancedText" class="text-sm text-neutral-300 leading-relaxed"></p>
-                            </div>
-                        </div>
-
-                        <!-- Generate Button -->
-                        <button onclick="app.generateImage()" id="genBtn" class="w-full py-4 rounded-xl bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 text-white font-bold text-lg shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 transition-all flex items-center justify-center gap-3 btn-hover">
-                            <i class="fas fa-atom text-xl animate-spin-slow"></i>
-                            Generate High-Fidelity Image
-                            <span class="text-xs font-normal opacity-70 ml-2">(Takes 10-30s for ultra quality)</span>
-                        </button>
-                    </div>
-
-                    <!-- Gallery -->
-                    <div id="gallerySection" class="hidden flex-1">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                                <i class="fas fa-images text-amber-500"></i>
-                                Generated Artifacts
-                            </h3>
-                            <div class="flex gap-2">
-                                <button onclick="app.downloadAll()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm text-neutral-300 transition-all">
-                                    <i class="fas fa-download mr-2"></i>Download All
-                                </button>
-                                <button onclick="app.clearGallery()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm text-neutral-300 transition-all">
-                                    <i class="fas fa-trash mr-2"></i>Clear
-                                </button>
-                            </div>
-                        </div>
-                        <div id="galleryGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <!-- Dynamic -->
-                        </div>
-                    </div>
-                </div>
-
             </div>
-        </main>
 
-        <!-- Image Modal -->
-        <div id="imageModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex items-center justify-center p-4" onclick="app.closeModal(event)">
-            <div class="relative max-w-5xl w-full animate-fade-in">
-                <!-- Close Button -->
-                <button onclick="app.closeModal()" class="absolute -top-12 right-0 p-2 text-white/70 hover:text-white text-2xl transition-all hover:rotate-90">
-                    <i class="fas fa-times"></i>
-                </button>
-                
-                <img id="modalImage" src="" class="w-full h-auto max-h-[80vh] object-contain rounded-xl border border-white/10 shadow-2xl">
-                
-                <div class="mt-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 glass p-4 rounded-xl">
-                    <div class="flex-1 min-w-0">
-                        <p id="modalPrompt" class="text-neutral-400 text-sm font-mono line-clamp-2 mb-1"></p>
-                        <div class="flex gap-2 text-xs text-neutral-600">
-                            <span id="modalDimensions"></span>
-                            <span>•</span>
-                            <span id="modalSeed">Seed: 12345</span>
-                        </div>
-                    </div>
-                    <div class="flex gap-3">
-                        <button onclick="app.downloadCurrent()" class="px-6 py-2 rounded-lg bg-white text-black font-semibold hover:bg-neutral-200 transition-all btn-hover">
-                            <i class="fas fa-download mr-2"></i>Download HD
-                        </button>
-                        <button onclick="app.variation()" class="px-6 py-2 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30 transition-all btn-hover">
-                            <i class="fas fa-shuffle mr-2"></i>Variation
-                        </button>
-                        <button onclick="app.upscaleImage()" class="px-6 py-2 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 hover:bg-purple-500/30 transition-all btn-hover">
-                            <i class="fas fa-expand mr-2"></i>Upscale
-                        </button>
-                    </div>
+        </div>
+    </main>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="hidden fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4" onclick="app.closeModal(event)">
+        <div class="relative max-w-5xl w-full">
+            <button onclick="app.closeModal()" class="absolute -top-12 right-0 p-2 text-white/70 hover:text-white text-2xl transition-all hover:rotate-90">
+                <i class="fas fa-times"></i>
+            </button>
+            <img id="modalImage" src="" class="w-full h-auto max-h-[80vh] object-contain rounded-xl border border-white/10 shadow-2xl">
+            <div class="mt-4 flex justify-between items-center glass p-4 rounded-xl">
+                <p id="modalPrompt" class="text-neutral-400 text-sm font-mono flex-1 mr-4 line-clamp-2"></p>
+                <div class="flex gap-3">
+                    <button onclick="app.downloadCurrent()" class="px-6 py-2 rounded-lg bg-white text-black font-semibold hover:bg-neutral-200">
+                        <i class="fas fa-download mr-2"></i>Download
+                    </button>
+                    <button onclick="app.variation()" class="px-6 py-2 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30">
+                        <i class="fas fa-shuffle mr-2"></i>Variation
+                    </button>
                 </div>
             </div>
         </div>
-
     </div>
 
     <script>
@@ -588,165 +385,144 @@
             constructor() {
                 this.currentTab = 'chat';
                 this.thinkMode = true;
-                this.autoEnhance = true;
                 this.conversations = JSON.parse(localStorage.getItem('nexus_conversations')) || [];
                 this.images = JSON.parse(localStorage.getItem('nexus_images')) || [];
                 this.currentChat = null;
                 this.isProcessing = false;
                 this.enhancedPromptText = '';
                 this.currentImage = null;
-                this.selectedStyle = '';
+                this.tabPanelOpen = false;
                 
                 this.init();
             }
 
             init() {
-                this.renderSidebar();
-                this.updateTabUI();
+                this.renderRecent();
+                this.updateHandleIcons();
             }
 
-            // Tab Management with Close functionality
-            switchTab(tab) {
-                this.currentTab = tab;
-                this.updateTabUI();
+            // Tab Panel Controls
+            toggleTabPanel() {
+                const panel = document.getElementById('tabPanel');
+                this.tabPanelOpen = !this.tabPanelOpen;
                 
-                // Update sidebar content based on tab
-                this.renderSidebar();
+                if (this.tabPanelOpen) {
+                    panel.classList.add('open');
+                } else {
+                    panel.classList.remove('open');
+                }
             }
 
-            closeCurrentTab() {
-                // Close current session and go back to welcome state
+            switchMode(mode) {
+                this.currentTab = mode;
+                
+                // Update UI
+                document.getElementById('modeChat').classList.toggle('active', mode === 'chat');
+                document.getElementById('modeImage').classList.toggle('active', mode === 'image');
+                document.getElementById('chatInterface').classList.toggle('hidden', mode !== 'chat');
+                document.getElementById('imageInterface').classList.toggle('hidden', mode !== 'image');
+                document.getElementById('modeText').textContent = mode === 'chat' ? 'Chat Mode' : 'Image Mode';
+                
+                this.updateHandleIcons();
+                this.renderRecent();
+                
+                // Optional: Auto-close panel after selection (commented out to let user close manually)
+                // setTimeout(() => this.toggleTabPanel(), 300);
+            }
+
+            updateHandleIcons() {
+                const chatIcon = document.getElementById('handleChatIcon');
+                const imageIcon = document.getElementById('handleImageIcon');
+                if (chatIcon) chatIcon.classList.toggle('active', this.currentTab === 'chat');
+                if (imageIcon) imageIcon.classList.toggle('active', this.currentTab === 'image');
+            }
+
+            renderRecent() {
+                const container = document.getElementById('recentList');
                 if (this.currentTab === 'chat') {
-                    this.newSession();
+                    if (this.conversations.length === 0) {
+                        container.innerHTML = '<p class="text-neutral-600 text-sm px-2">No recent chats</p>';
+                        return;
+                    }
+                    container.innerHTML = this.conversations.slice(0, 5).map(c => `
+                        <button onclick="app.loadChat(${c.id})" class="w-full text-left p-3 rounded-xl hover:bg-white/5 transition-all text-sm truncate">
+                            <div class="text-neutral-300 truncate">${c.title}</div>
+                            <div class="text-xs text-neutral-600">${new Date(c.timestamp).toLocaleDateString()}</div>
+                        </button>
+                    `).join('');
                 } else {
-                    this.clearImageInput();
-                    document.getElementById('gallerySection').classList.add('hidden');
+                    if (this.images.length === 0) {
+                        container.innerHTML = '<p class="text-neutral-600 text-sm px-2">No recent images</p>';
+                        return;
+                    }
+                    container.innerHTML = this.images.slice(0, 5).map(img => `
+                        <button onclick="app.openModal('${img.url}', '${this.escapeHtml(img.prompt)}')" class="w-full p-2 rounded-xl hover:bg-white/5 transition-all flex gap-3 items-center">
+                            <img src="${img.url}" class="w-10 h-10 rounded-lg object-cover border border-white/10">
+                            <div class="text-xs text-neutral-400 truncate flex-1">${img.prompt.substring(0, 30)}...</div>
+                        </button>
+                    `).join('');
                 }
-                this.renderSidebar();
             }
 
-            updateTabUI() {
-                const isChat = this.currentTab === 'chat';
-                
-                // Update tab buttons
-                const chatBtn = document.getElementById('tabChat');
-                const imageBtn = document.getElementById('tabImage');
-                
-                if (isChat) {
-                    chatBtn.classList.add('bg-amber-500/20', 'text-amber-400', 'border-amber-500/30');
-                    chatBtn.classList.remove('text-neutral-400', 'hover:text-white', 'hover:bg-white/5');
-                    imageBtn.classList.remove('bg-amber-500/20', 'text-amber-400', 'border-amber-500/30');
-                    imageBtn.classList.add('text-neutral-400', 'hover:text-white', 'hover:bg-white/5');
-                } else {
-                    imageBtn.classList.add('bg-amber-500/20', 'text-amber-400', 'border-amber-500/30');
-                    imageBtn.classList.remove('text-neutral-400', 'hover:text-white', 'hover:bg-white/5');
-                    chatBtn.classList.remove('bg-amber-500/20', 'text-amber-400', 'border-amber-500/30');
-                    chatBtn.classList.add('text-neutral-400', 'hover:text-white', 'hover:bg-white/5');
-                }
-                
-                // Show/hide interfaces
-                document.getElementById('chatInterface').classList.toggle('hidden', !isChat);
-                document.getElementById('imageInterface').classList.toggle('hidden', isChat);
-                document.getElementById('modeBadge').classList.toggle('hidden', !isChat);
-                document.getElementById('imageSettingsBtn').classList.toggle('hidden', isChat);
-                document.getElementById('closeTabBtn').classList.toggle('hidden', false); // Always show close button when in session
-                
-                // Update text
-                document.getElementById('modeText').textContent = isChat ? 'Chat Mode' : 'Image Studio';
-                
-                // Close tab button visibility logic
-                const hasActiveChat = this.currentChat && !document.getElementById('chatWelcome').classList.contains('hidden');
-                const hasActiveImage = !document.getElementById('gallerySection').classList.contains('hidden');
-                document.getElementById('closeTabBtn').classList.toggle('hidden', !(hasActiveChat || hasActiveImage));
-            }
-
-            // Advanced Chat with Reasoning
+            // Chat Functions
             async sendMessage() {
                 if (this.isProcessing) return;
                 
-                const inputId = this.currentChat ? 'chatInputActive' : 'chatInput';
-                const input = document.getElementById(inputId);
+                const input = document.getElementById(this.currentChat ? 'chatInputActive' : 'chatInput');
                 const text = input.value.trim();
-                
                 if (!text) return;
                 
                 this.isProcessing = true;
-                this.updateUIState(true);
                 input.value = '';
                 
                 if (!this.currentChat) {
-                    this.currentChat = {
-                        id: Date.now(),
-                        title: text.substring(0, 40),
-                        messages: [],
-                        timestamp: Date.now()
-                    };
+                    this.currentChat = { id: Date.now(), title: text.substring(0, 40), messages: [], timestamp: Date.now() };
                     this.conversations.unshift(this.currentChat);
                     
                     document.getElementById('chatWelcome').classList.add('hidden');
                     document.getElementById('chatMessages').classList.remove('hidden');
                     document.getElementById('chatInputArea').classList.remove('hidden');
-                    document.getElementById('closeTabBtn').classList.remove('hidden');
                 }
                 
                 this.addMessage('user', text);
                 
-                let systemPrompt = 'You are Nexus AI, an advanced reasoning engine. ';
-                if (this.thinkMode) {
-                    systemPrompt += 'Use step-by-step chain-of-thought reasoning. For complex problems, show your thinking process enclosed in <thinking></thinking> tags, then provide the final answer. Be thorough and detailed.';
-                } else {
-                    systemPrompt += 'Provide accurate, concise responses.';
-                }
+                const systemPrompt = this.thinkMode 
+                    ? 'You are Nexus AI. Use step-by-step chain-of-thought reasoning. Show thinking in <thinking></thinking> tags.'
+                    : 'You are Nexus AI, a helpful assistant.';
                 
-                const messages = [
-                    { role: 'system', content: systemPrompt },
-                    ...this.currentChat.messages.map(m => ({
-                        role: m.role === 'thinking' ? 'assistant' : m.role,
-                        content: m.content
-                    }))
-                ];
+                const messages = [{ role: 'system', content: systemPrompt }, ...this.currentChat.messages.filter(m => m.role !== 'thinking').map(m => ({ role: m.role, content: m.content }))];
                 
                 const loadingId = Date.now();
                 this.addMessage('loading', '', loadingId);
-                this.scrollToBottom();
                 
                 try {
                     const response = await fetch('https://text.pollinations.ai/', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            messages: messages,
-                            model: 'openai',
-                            seed: Math.floor(Math.random() * 1000),
-                            temperature: this.thinkMode ? 0.7 : 0.5,
-                            top_p: 0.9,
-                            presence_penalty: 0.1,
-                            frequency_penalty: 0.1
-                        })
+                        body: JSON.stringify({ messages, model: 'openai', temperature: 0.7 })
                     });
                     
                     const data = await response.text();
                     this.removeMessage(loadingId);
                     
                     if (this.thinkMode && data.includes('<thinking>')) {
-                        const thinkingMatch = data.match(/<thinking>([\s\S]*?)<\/thinking>/);
-                        const mainContent = data.replace(/<thinking>[\s\S]*?<\/thinking>/, '').trim();
-                        
-                        if (thinkingMatch) this.addMessage('thinking', thinkingMatch[1]);
-                        if (mainContent) this.addMessage('assistant', mainContent);
+                        const match = data.match(/<thinking>([\s\S]*?)<\/thinking>/);
+                        const main = data.replace(/<thinking>[\s\S]*?<\/thinking>/, '').trim();
+                        if (match) this.addMessage('thinking', match[1]);
+                        if (main) this.addMessage('assistant', main);
                     } else {
                         this.addMessage('assistant', data);
                     }
                     
                     this.saveConversations();
-                    this.renderSidebar();
-                    
+                    this.renderRecent();
                 } catch (error) {
                     this.removeMessage(loadingId);
-                    this.addMessage('error', 'Neural pathway interrupted. Please retry.');
+                    this.addMessage('error', 'Error processing request.');
                 } finally {
                     this.isProcessing = false;
-                    this.updateUIState(false);
+                    document.getElementById('sendBtn').innerHTML = 'Process <i class="fas fa-arrow-right ml-2"></i>';
+                    document.getElementById('sendBtnActive').innerHTML = '<i class="fas fa-paper-plane"></i>';
                 }
             }
 
@@ -757,535 +533,98 @@
                 if (id) div.id = `msg-${id}`;
                 
                 if (type === 'user') {
-                    div.innerHTML = `
-                        <div class="flex justify-end">
-                            <div class="max-w-[85%] bg-gradient-to-r from-amber-600 to-orange-600 rounded-2xl rounded-tr-sm px-6 py-4 text-white shadow-lg">
-                                <p class="text-[15px] leading-relaxed">${this.escapeHtml(content)}</p>
-                            </div>
-                        </div>
-                    `;
+                    div.innerHTML = `<div class="flex justify-end"><div class="max-w-[85%] bg-gradient-to-r from-amber-600 to-orange-600 rounded-2xl rounded-tr-sm px-6 py-4 text-white shadow-lg"><p class="text-[15px]">${this.escapeHtml(content)}</p></div></div>`;
                     this.currentChat.messages.push({ role: 'user', content });
-                    
                 } else if (type === 'loading') {
-                    div.innerHTML = `
-                        <div class="flex gap-4">
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center flex-shrink-0 mt-1">
-                                <i class="fas fa-robot text-white text-xs"></i>
-                            </div>
-                            <div class="glass rounded-2xl px-6 py-4 border border-amber-500/20">
-                                <div class="flex items-center gap-3 text-amber-500 mb-2">
-                                    <div class="typing-indicator">
-                                        <div class="typing-dot"></div>
-                                        <div class="typing-dot"></div>
-                                        <div class="typing-dot"></div>
-                                    </div>
-                                    <span class="text-sm font-medium">Thinking...</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    
-                } else if (type === 'thinking') {
-                    div.innerHTML = `
-                        <div class="flex gap-4 mb-4">
-                            <div class="w-8 h-8 rounded-full bg-blue-600/20 flex items-center justify-center flex-shrink-0 mt-1 border border-blue-500/30">
-                                <i class="fas fa-brain text-blue-400 text-xs"></i>
-                            </div>
-                            <div class="flex-1 thinking-box">
-                                <div class="text-blue-400 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
-                                    <i class="fas fa-project-diagram"></i> Reasoning Chain
-                                </div>
-                                <div class="text-blue-100/80 text-sm font-mono leading-relaxed whitespace-pre-wrap">${this.escapeHtml(content)}</div>
-                            </div>
-                        </div>
-                    `;
-                    this.currentChat.messages.push({ role: 'thinking', content });
-                    
+                    div.innerHTML = `<div class="flex gap-4"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center"><i class="fas fa-robot text-white text-xs"></i></div><div class="glass rounded-2xl px-6 py-4"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div></div>`;
                 } else if (type === 'assistant') {
-                    div.innerHTML = `
-                        <div class="flex gap-4">
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-lg">
-                                <i class="fas fa-robot text-white text-xs"></i>
-                            </div>
-                            <div class="flex-1 glass rounded-2xl px-6 py-5 border border-white/10 prose prose-invert max-w-none">
-                                ${marked.parse(content)}
-                            </div>
-                        </div>
-                    `;
+                    div.innerHTML = `<div class="flex gap-4"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center"><i class="fas fa-robot text-white text-xs"></i></div><div class="flex-1 glass rounded-2xl px-6 py-5 prose prose-invert max-w-none">${marked.parse(content)}</div></div>`;
                     this.currentChat.messages.push({ role: 'assistant', content });
-                    
-                    setTimeout(() => {
-                        div.querySelectorAll('pre code').forEach(block => {
-                            hljs.highlightElement(block);
-                        });
-                    }, 100);
-                    
-                } else if (type === 'error') {
-                    div.innerHTML = `
-                        <div class="flex justify-center">
-                            <div class="bg-red-500/10 border border-red-500/30 text-red-400 px-6 py-3 rounded-xl text-sm">
-                                <i class="fas fa-exclamation-circle mr-2"></i>${content}
-                            </div>
-                        </div>
-                    `;
+                    setTimeout(() => div.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block)), 100);
                 }
                 
                 container.appendChild(div);
-                this.scrollToBottom();
+                document.getElementById('viewport').scrollTo({ top: document.getElementById('viewport').scrollHeight, behavior: 'smooth' });
             }
 
-            removeMessage(id) {
-                const msg = document.getElementById(`msg-${id}`);
-                if (msg) msg.remove();
-            }
+            removeMessage(id) { document.getElementById(`msg-${id}`)?.remove(); }
+            handleKeyDown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.sendMessage(); } }
+            loadExample(type) { document.getElementById('chatInput').value = type === 'debug' ? 'Debug this recursive function:' : 'Prove by induction:'; }
 
-            // Stronger Image Generation
-            async enhancePrompt() {
-                const concept = document.getElementById('imagePrompt').value.trim();
-                if (!concept) {
-                    alert('Enter a concept first');
-                    return;
-                }
-                
-                const btn = document.getElementById('enhanceBtn');
-                btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Engineering...';
-                btn.disabled = true;
-                
-                try {
-                    const response = await fetch('https://text.pollinations.ai/', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            messages: [{
-                                role: 'system',
-                                content: 'You are an expert prompt engineer for AI image generation. Convert user concepts into detailed, photorealistic prompts. Include: camera specs (Canon EOS R5, 85mm f/1.2), lighting setup (volumetric, golden hour, dramatic shadows), rendering engine (Unreal Engine 5, Octane Render), texture details (subsurface scattering, micro-details), composition (rule of thirds, depth of field, leading lines), and quality tags (8k, ray tracing, global illumination, masterpiece). Output ONLY the enhanced prompt, no explanations.'
-                            }, {
-                                role: 'user',
-                                content: concept
-                            }],
-                            model: 'openai',
-                            temperature: 0.8
-                        })
-                    });
-                    
-                    const enhanced = await response.text();
-                    this.enhancedPromptText = enhanced;
-                    
-                    document.getElementById('enhancedPreview').classList.remove('hidden');
-                    document.getElementById('enhancedText').textContent = enhanced;
-                    
-                } catch (e) {
-                    console.error(e);
-                } finally {
-                    btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> AI Enhance Prompt (Recommended)';
-                    btn.disabled = false;
-                }
-            }
-
-            useEnhanced() {
-                document.getElementById('imagePrompt').value = this.enhancedPromptText;
-                document.getElementById('enhancedPreview').classList.add('hidden');
-            }
-
-            editEnhanced() {
-                document.getElementById('imagePrompt').value = this.enhancedPromptText;
-                document.getElementById('imagePrompt').focus();
-            }
-
-            addModifier(modifier) {
-                const input = document.getElementById('imagePrompt');
-                const current = input.value.trim();
-                if (current && !current.includes(modifier)) {
-                    input.value = current + ', ' + modifier;
-                } else if (!current) {
-                    input.value = modifier;
-                }
-            }
-
-            clearImageInput() {
-                document.getElementById('imagePrompt').value = '';
-                document.getElementById('enhancedPreview').classList.add('hidden');
-                this.enhancedPromptText = '';
-            }
-
-            randomizePrompt() {
-                const subjects = ['cyberpunk city', 'ethereal forest', 'futuristic spaceship', 'mystical creature', 'ancient temple', 'neon portrait'];
-                const modifiers = ['8k resolution', 'highly detailed', 'cinematic lighting', 'unreal engine 5', 'photorealistic'];
-                
-                const randomSubject = subjects[Math.floor(Math.random() * subjects.length)];
-                const randomModifiers = modifiers.sort(() => 0.5 - Math.random()).slice(0, 3).join(', ');
-                
-                document.getElementById('imagePrompt').value = `${randomSubject}, ${randomModifiers}`;
-            }
-
+            // Image Functions
             async generateImage() {
                 if (this.isProcessing) return;
-                
                 let prompt = document.getElementById('imagePrompt').value.trim();
                 if (!prompt) return;
                 
-                // Add style preset if selected
-                const style = document.getElementById('stylePreset').value;
-                if (style) {
-                    const styleModifiers = {
-                        'photorealistic': 'photorealistic, hyperrealistic, photography',
-                        'digital_art': 'digital art, artstation, trending',
-                        'anime': 'anime style, studio ghibli, detailed anime',
-                        'oil_painting': 'oil painting, baroque style, canvas texture',
-                        '3d_render': '3d render, blender, c4d, octane',
-                        'cinematic': 'cinematic, film grain, anamorphic lens',
-                        'fantasy': 'fantasy art, dramatic, epic scale'
-                    };
-                    if (styleModifiers[style]) prompt += ', ' + styleModifiers[style];
-                }
-                
-                // Use enhanced if available and matches
-                if (this.enhancedPromptText && prompt.includes(this.enhancedPromptText.substring(0, 50))) {
-                    prompt = this.enhancedPromptText;
-                } else if (!this.enhancedPromptText) {
-                    // Auto-add quality tags
-                    prompt += ', highly detailed, 8k resolution, photorealistic, masterpiece, best quality';
-                }
-                
-                const quality = document.getElementById('qualitySetting').value;
-                let enhanceParam = 'true';
-                let qualityNum = 95;
-                
-                if (quality === 'fast') {
-                    qualityNum = 80;
-                    enhanceParam = 'false';
-                } else if (quality === 'ultra') {
-                    qualityNum = 100;
-                    prompt += ', intricate details, subsurface scattering, ray tracing global illumination';
-                }
-                
                 this.isProcessing = true;
-                document.getElementById('genBtn').innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Generating High-Fidelity Image...';
-                document.getElementById('genBtn').disabled = true;
+                if (this.enhancedPromptText) prompt = this.enhancedPromptText;
                 
                 document.getElementById('gallerySection').classList.remove('hidden');
-                document.getElementById('closeTabBtn').classList.remove('hidden');
-                
                 const grid = document.getElementById('galleryGrid');
                 const placeholder = document.createElement('div');
-                placeholder.className = 'artifact-card aspect-square flex items-center justify-center relative bg-dark-800';
-                placeholder.innerHTML = `
-                    <div class="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-orange-600/10 animate-pulse"></div>
-                    <div class="text-center z-10">
-                        <div class="w-16 h-16 rounded-full border-4 border-amber-500/30 border-t-amber-500 animate-spin mx-auto mb-4"></div>
-                        <p class="text-amber-500 font-medium">Synthesizing...</p>
-                        <p class="text-neutral-600 text-xs mt-1">${quality === 'ultra' ? 'Ultra quality (slow)' : 'Processing'}</p>
-                    </div>
-                `;
+                placeholder.className = 'artifact-card aspect-square flex items-center justify-center bg-dark-800';
+                placeholder.innerHTML = `<div class="text-center"><div class="w-16 h-16 rounded-full border-4 border-amber-500/30 border-t-amber-500 animate-spin mx-auto mb-4"></div><p class="text-amber-500">Generating...</p></div>`;
                 grid.prepend(placeholder);
                 
                 try {
                     const aspect = document.getElementById('aspectRatio').value;
                     const [width, height] = aspect.split('x').map(Number);
                     const seed = Math.floor(Math.random() * 99999);
-                    
-                    // Build advanced URL with all parameters
-                    const params = new URLSearchParams({
-                        width: width,
-                        height: height,
-                        seed: seed,
-                        nologo: 'true',
-                        enhance: enhanceParam,
-                        quality: qualityNum
-                    });
-                    
-                    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params.toString()}`;
+                    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
                     
                     const img = new Image();
-                    img.crossOrigin = "anonymous";
-                    
                     img.onload = () => {
-                        const imageData = {
-                            id: Date.now(),
-                            url: imageUrl,
-                            prompt: prompt,
-                            seed: seed,
-                            dimensions: `${width}x${height}`,
-                            quality: quality,
-                            timestamp: Date.now()
-                        };
-                        
-                        this.images.unshift(imageData);
+                        this.images.unshift({ id: Date.now(), url, prompt, seed, dimensions: `${width}x${height}`, timestamp: Date.now() });
                         this.saveImages();
-                        
-                        placeholder.outerHTML = `
-                            <div class="artifact-card group cursor-pointer" onclick="app.openModal('${imageUrl}', '${this.escapeHtml(prompt)}', '${width}x${height}', '${seed}')">
-                                <div class="aspect-square relative overflow-hidden bg-dark-800">
-                                    <img src="${imageUrl}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                                        <p class="text-white text-xs font-mono mb-1">${width}×${height}</p>
-                                        <p class="text-amber-400 text-xs">Seed: ${seed}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        
-                        this.renderSidebar();
+                        placeholder.outerHTML = `<div class="artifact-card group cursor-pointer" onclick="app.openModal('${url}', '${this.escapeHtml(prompt)}')"><div class="aspect-square relative overflow-hidden bg-dark-800"><img src="${url}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"><div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4"><p class="text-white text-xs">${width}×${height}</p><p class="text-amber-400 text-xs">Seed: ${seed}</p></div></div></div>`;
+                        this.renderRecent();
                     };
-                    
-                    img.onerror = () => {
-                        placeholder.innerHTML = `
-                            <div class="text-center p-4 text-red-400">
-                                <i class="fas fa-exclamation-circle text-3xl mb-2"></i>
-                                <p class="text-sm">Generation failed</p>
-                                <button onclick="app.generateImage()" class="text-xs mt-2 text-amber-400 hover:underline">Retry</button>
-                            </div>
-                        `;
-                    };
-                    
-                    img.src = imageUrl;
-                    this.currentImage = imageUrl;
-                    
-                } catch (error) {
-                    console.error(error);
-                } finally {
-                    this.isProcessing = false;
-                    document.getElementById('genBtn').innerHTML = '<i class="fas fa-atom text-xl mr-2"></i> Generate High-Fidelity Image <span class="text-xs font-normal opacity-70 ml-2">(Takes 10-30s for ultra quality)</span>';
-                    document.getElementById('genBtn').disabled = false;
-                }
+                    img.src = url;
+                    this.currentImage = url;
+                } catch (e) { console.error(e); }
+                finally { this.isProcessing = false; }
             }
 
-            openModal(url, prompt, dimensions, seed) {
-                document.getElementById('modalImage').src = url;
-                document.getElementById('modalPrompt').textContent = prompt;
-                document.getElementById('modalDimensions').textContent = dimensions || '';
-                document.getElementById('modalSeed').textContent = 'Seed: ' + (seed || 'N/A');
-                document.getElementById('imageModal').classList.remove('hidden');
-            }
-
-            closeModal(e) {
-                if (e && e.target !== e.currentTarget) return;
-                document.getElementById('imageModal').classList.add('hidden');
-            }
-
-            downloadCurrent() {
-                if (!this.currentImage) return;
-                const a = document.createElement('a');
-                a.href = this.currentImage;
-                a.download = `nexus-artifact-${Date.now()}.jpg`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            }
-
-            downloadAll() {
-                this.images.forEach((img, idx) => {
-                    setTimeout(() => {
-                        const a = document.createElement('a');
-                        a.href = img.url;
-                        a.download = `nexus-artifact-${img.id}.jpg`;
-                        a.click();
-                    }, idx * 1000);
-                });
-            }
-
-            variation() {
-                this.closeModal();
-                document.getElementById('imagePrompt').value += ' (variation, slightly different)';
-                setTimeout(() => this.generateImage(), 500);
-            }
-
-            upscaleImage() {
-                // Placeholder for upscaling functionality
-                alert('Upscaling to 4x resolution... (Feature simulation)');
-            }
-
-            clearGallery() {
-                if (!confirm('Clear all generated images?')) return;
-                this.images = [];
-                this.saveImages();
-                document.getElementById('gallerySection').classList.add('hidden');
-                document.getElementById('galleryGrid').innerHTML = '';
-                this.renderSidebar();
+            addModifier(mod) { const el = document.getElementById('imagePrompt'); el.value = el.value ? el.value + ', ' + mod : mod; }
+            clearImageInput() { document.getElementById('imagePrompt').value = ''; this.enhancedPromptText = ''; }
+            openModal(url, prompt) { document.getElementById('modalImage').src = url; document.getElementById('modalPrompt').textContent = prompt; document.getElementById('imageModal').classList.remove('hidden'); }
+            closeModal(e) { if (!e || e.target === e.currentTarget) document.getElementById('imageModal').classList.add('hidden'); }
+            downloadCurrent() { if (this.currentImage) window.open(this.currentImage, '_blank'); }
+            clearGallery() { if (confirm('Clear all?')) { this.images = []; this.saveImages(); document.getElementById('gallerySection').classList.add('hidden'); document.getElementById('galleryGrid').innerHTML = ''; } }
+            saveImages() { localStorage.setItem('nexus_images', JSON.stringify(this.images)); }
+            
+            async enhancePrompt() {
+                const concept = document.getElementById('imagePrompt').value.trim();
+                if (!concept) return;
+                document.getElementById('enhanceBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                try {
+                    const res = await fetch('https://text.pollinations.ai/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [{ role: 'system', content: 'You are a prompt engineer. Convert to detailed image prompts.' }, { role: 'user', content: concept }], model: 'openai' }) });
+                    this.enhancedPromptText = await res.text();
+                    document.getElementById('imagePrompt').value = this.enhancedPromptText;
+                } catch (e) {}
+                document.getElementById('enhanceBtn').innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> AI Enhance Prompt';
             }
 
             // Utilities
-            handleKeyDown(e, source) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    this.sendMessage();
-                }
-            }
-
-            loadExample(type) {
-                const examples = {
-                    debug: 'Analyze this recursive algorithm for time complexity and potential stack overflow issues. Provide an optimized iterative solution with explanation:',
-                    math: 'Prove by mathematical induction that the sum of the first n odd natural numbers equals n². Show all steps clearly.',
-                    analyze: 'Analyze the architectural patterns in this system design and suggest improvements for scalability:'
-                };
-                document.getElementById('chatInput').value = examples[type];
-                document.getElementById('chatInput').focus();
-            }
-
-            updateUIState(processing) {
-                const stopBtn = document.getElementById('stopBtn');
-                const sendBtns = ['sendBtn', 'sendBtnActive'];
-                
-                if (processing) {
-                    stopBtn?.classList.remove('hidden');
-                    sendBtns.forEach(id => {
-                        const btn = document.getElementById(id);
-                        if (btn) {
-                            btn.classList.add('opacity-50', 'pointer-events-none');
-                            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
-                        }
-                    });
-                } else {
-                    stopBtn?.classList.add('hidden');
-                    document.getElementById('sendBtn').innerHTML = 'Process <i class="fas fa-arrow-right ml-2"></i>';
-                    document.getElementById('sendBtnActive').innerHTML = '<i class="fas fa-paper-plane"></i>';
-                    sendBtns.forEach(id => {
-                        document.getElementById(id)?.classList.remove('opacity-50', 'pointer-events-none');
-                    });
-                }
-            }
-
-            stopGeneration() {
-                this.isProcessing = false;
-                this.updateUIState(false);
-                document.querySelectorAll('[id^="msg-"]').forEach(el => {
-                    if (el.querySelector('.typing-indicator')) {
-                        el.innerHTML = '<div class="text-neutral-500 italic">Interrupted by user</div>';
-                    }
-                });
-            }
-
-            newSession() {
-                this.currentChat = null;
-                document.getElementById('chatWelcome').classList.remove('hidden');
-                document.getElementById('chatMessages').classList.add('hidden');
-                document.getElementById('chatInputArea').classList.add('hidden');
-                document.getElementById('chatMessages').innerHTML = '';
-                document.getElementById('closeTabBtn').classList.add('hidden');
-            }
-
-            clearAll() {
-                if (!confirm('Clear all conversations and images?')) return;
-                this.conversations = [];
-                this.images = [];
-                this.saveConversations();
-                this.saveImages();
-                this.newSession();
-                this.clearImageInput();
-                document.getElementById('gallerySection').classList.add('hidden');
-                document.getElementById('galleryGrid').innerHTML = '';
-                this.renderSidebar();
-            }
-
-            scrollToBottom() {
-                const vp = document.getElementById('viewport');
-                vp.scrollTo({ top: vp.scrollHeight, behavior: 'smooth' });
-            }
-
-            toggleSidebar() {
-                const sb = document.getElementById('sidebar');
-                sb.classList.toggle('-translate-x-full');
-            }
-
-            toggleAdvancedSettings() {
-                const panel = document.getElementById('advancedSettings');
-                const arrow = document.getElementById('settingsArrow');
-                panel.classList.toggle('hidden');
-                arrow.style.transform = panel.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(90deg)';
-            }
-
-            toggleAutoEnhance() {
-                this.autoEnhance = !this.autoEnhance;
-                const btn = document.getElementById('autoEnhanceToggle');
-                const dot = btn.querySelector('span');
-                if (this.autoEnhance) {
-                    dot.classList.add('translate-x-5');
-                    btn.classList.remove('bg-dark-700');
-                    btn.classList.add('bg-amber-500');
-                } else {
-                    dot.classList.remove('translate-x-5');
-                    btn.classList.add('bg-dark-700');
-                    btn.classList.remove('bg-amber-500');
-                }
-            }
-
-            toggleImageSettings() {
-                // Toggle image generation advanced options
-                alert('Image settings:\n- Quality: Ultra/High/Fast\n- Style presets available\n- Aspect ratio controls');
-            }
-
-            renderSidebar() {
-                const container = document.getElementById('sidebarContent');
-                
-                if (this.currentTab === 'chat') {
-                    if (this.conversations.length === 0) {
-                        container.innerHTML = '<p class="text-neutral-600 text-center text-sm py-8 italic">No conversations yet. Start chatting!</p>';
-                        return;
-                    }
-                    container.innerHTML = '<h3 class="text-xs font-bold text-amber-500/80 uppercase tracking-wider mb-3 px-2">Recent Chats</h3>' +
-                        this.conversations.map(c => `
-                            <button onclick="app.loadChat(${c.id})" class="w-full text-left p-3 rounded-xl mb-1 ${this.currentChat?.id === c.id ? 'bg-amber-500/20 border border-amber-500/30' : 'hover:bg-white/5 border border-transparent'} transition-all group">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <i class="fas fa-comment text-xs ${this.currentChat?.id === c.id ? 'text-amber-400' : 'text-neutral-600'}"></i>
-                                    <span class="text-sm text-neutral-300 truncate font-medium">${c.title}</span>
-                                </div>
-                                <p class="text-xs text-neutral-600 ml-5">${new Date(c.timestamp).toLocaleDateString()}</p>
-                            </button>
-                        `).join('');
-                } else {
-                    if (this.images.length === 0) {
-                        container.innerHTML = '<p class="text-neutral-600 text-center text-sm py-8 italic">No images generated yet.</p>';
-                        return;
-                    }
-                    container.innerHTML = '<h3 class="text-xs font-bold text-amber-500/80 uppercase tracking-wider mb-3 px-2">Recent Images</h3>' +
-                        this.images.slice(0, 6).map(img => `
-                            <button onclick="app.openModal('${img.url}', '${this.escapeHtml(img.prompt)}', '${img.dimensions}', '${img.seed}')" class="w-full p-2 rounded-xl mb-2 hover:bg-white/5 transition-all group">
-                                <div class="flex gap-3 items-center">
-                                    <img src="${img.url}" class="w-12 h-12 rounded-lg object-cover border border-white/10">
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-xs text-neutral-400 font-mono">${img.dimensions}</p>
-                                        <p class="text-[10px] text-neutral-600 truncate">${this.escapeHtml(img.prompt.substring(0, 30))}...</p>
-                                    </div>
-                                </div>
-                            </button>
-                        `).join('');
-                }
-            }
-
             loadChat(id) {
                 const chat = this.conversations.find(c => c.id === id);
                 if (!chat) return;
-                
                 this.currentChat = chat;
-                this.switchTab('chat');
-                
+                this.switchMode('chat');
                 document.getElementById('chatWelcome').classList.add('hidden');
                 document.getElementById('chatMessages').classList.remove('hidden');
                 document.getElementById('chatInputArea').classList.remove('hidden');
-                document.getElementById('closeTabBtn').classList.remove('hidden');
-                
-                const container = document.getElementById('chatMessages');
-                container.innerHTML = '';
-                chat.messages.forEach(m => {
-                    if (m.role === 'user') this.addMessage('user', m.content);
-                    else if (m.role === 'thinking') this.addMessage('thinking', m.content);
-                    else if (m.role === 'assistant') this.addMessage('assistant', m.content);
-                });
+                document.getElementById('chatMessages').innerHTML = '';
+                chat.messages.forEach(m => { if (m.role === 'user') this.addMessage('user', m.content); else if (m.role === 'assistant') this.addMessage('assistant', m.content); });
             }
 
-            saveConversations() {
-                localStorage.setItem('nexus_conversations', JSON.stringify(this.conversations));
-            }
-
-            saveImages() {
-                localStorage.setItem('nexus_images', JSON.stringify(this.images));
-            }
-
-            escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            }
+            newSession() { this.currentChat = null; document.getElementById('chatWelcome').classList.remove('hidden'); document.getElementById('chatMessages').classList.add('hidden'); document.getElementById('chatInputArea').classList.add('hidden'); document.getElementById('chatMessages').innerHTML = ''; }
+            toggleThinkMode() { this.thinkMode = !this.thinkMode; const btn = document.getElementById('thinkToggle'); const dot = btn.querySelector('span'); if (this.thinkMode) { dot.classList.add('translate-x-5'); btn.classList.add('bg-amber-500'); btn.classList.remove('bg-neutral-700'); } else { dot.classList.remove('translate-x-5'); btn.classList.remove('bg-amber-500'); btn.classList.add('bg-neutral-700'); } }
+            clearAll() { if (confirm('Clear all data?')) { this.conversations = []; this.images = []; this.newSession(); this.clearImageInput(); this.saveConversations(); this.saveImages(); this.renderRecent(); } }
+            saveConversations() { localStorage.setItem('nexus_conversations', JSON.stringify(this.conversations)); }
+            stopGeneration() { this.isProcessing = false; }
+            escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
         }
 
         const app = new NexusAIStudio();
